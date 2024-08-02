@@ -50,16 +50,9 @@ Welcome to the Inventory Manager Web Application and Desktop POS Cashier Applica
    * **Discount Management:** Set up product, category, or total amount-based discounts, with options for flat or percentage discounts.
 
 ##### Benefits
-
 * **Efficiency:** Streamline inventory management and sales processes to save time and reduce errors.
 * **Flexibility:** Operate seamlessly both online and offline, ensuring continuous business operations.
 * **Scalability:** Adapt to businesses of all sizes, from small retailers to large enterprises.
 * **Insightful** Analytics: Make informed decisions with real-time reports and analytics.
 * **User-Friendly** Interface: Easy-to-use interfaces for both the web application and desktop POS.
-
-
-Getting Started
-To get started with the Inventory Manager Web Application and Desktop POS Cashier Application, follow our installation guides and explore the user guides for detailed instructions on how to make the most of the powerful features offered by our software suite.
-
-For further assistance, visit our knowledge base, explore tutorials, or contact our support team. We're here to help you succeed!
 

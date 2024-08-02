@@ -9,23 +9,23 @@
 
     <toc-element topic="Inventory-Manager.md">
         <toc-element topic="Welcome.md"/>
-        <toc-element topic="Common-Issues-and-Solutions.md"/>
-        <toc-element topic="FAQs.md">
-            <toc-element topic="General-Questions.md"/>
-            <toc-element topic="Technical-Support.md"/>
-        </toc-element>
-        <toc-element topic="Tutorials.md">
-            <toc-element topic="Step-by-Step-Guide.md"/>
-            <toc-element topic="Video-Tutorials.md"/>
+        <toc-element topic="Getting-Started.md">
+            <toc-element topic="System-Requirements.md"/>
+            <toc-element topic="Installation-Guides.md"/>
         </toc-element>
         <toc-element topic="User-Guides.md">
             <toc-element topic="Web-Application-User-Guide.md"/>
             <toc-element topic="Desktop-POS-Cashier-User-Guide.md"/>
         </toc-element>
-        <toc-element topic="Getting-Started.md">
-            <toc-element topic="System-Requirements.md"/>
-            <toc-element topic="Installation-Guides.md"/>
+        <toc-element topic="Tutorials.md">
+            <toc-element topic="Step-by-Step-Guide.md"/>
+            <toc-element topic="Video-Tutorials.md"/>
         </toc-element>
+        <toc-element topic="FAQs.md">
+            <toc-element topic="General-Questions.md"/>
+            <toc-element topic="Technical-Support.md"/>
+        </toc-element>
+        <toc-element topic="Common-Issues-and-Solutions.md"/>
     </toc-element>
     <toc-element topic="Estate-Manager.md">
         <toc-element topic="Estate-Manager-Welcome.md"/>
