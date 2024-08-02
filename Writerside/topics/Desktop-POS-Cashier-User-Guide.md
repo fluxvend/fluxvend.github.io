@@ -1,0 +1,3 @@
+# Desktop POS Cashier User Guide
+
+Start typing here...
