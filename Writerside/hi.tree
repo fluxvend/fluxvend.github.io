@@ -4,7 +4,7 @@
 
 <instance-profile id="hi"
                  name="Fluxvend"
-                 start-page="Welcome.md">
+                 start-page="Getting-Started.md">
 
 
     <toc-element topic="Inventory-Manager.md">
