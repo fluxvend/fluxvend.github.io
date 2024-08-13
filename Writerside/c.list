@@ -3,4 +3,12 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/categories.dtd">
 <categories>
     <category id="wrs" name="Writerside documentation" order="1"/>
+    <category id="related" name="Related topics" order="2"/>
+    <category id="external" name="External resources" order="3"/>
+    <category id="faq" name="FAQ" order="4"/>
+    <category id="tutorials" name="Tutorials" order="5"/>
+    <category id="getting-started" name="Getting started" order="6"/>
+    <category id="user-guides" name="User guides" order="7"/>
+    <category id="developer-tools" name="Developer tools" order="8"/>
+    <category id="common-issues" name="Common issues and solutions" order="9"/>
 </categories>

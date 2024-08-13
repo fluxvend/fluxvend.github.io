@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Developer Tools" id="Developer-Tools">
+
+    <section-starting-page>
+        <title>Developer Tools</title>
+        <description>Get started with the tools that help you integrate your application with Fluxvend.</description>
+
+
+        <spotlight>
+            <a href="Authentication.md" type="key">
+                Authentication
+            </a>
+            <a href="Webhooks.md" type="development">
+                Webhooks
+            </a>
+        </spotlight>
+
+        <primary>
+            <title>Resources</title>
+            <a href="OpenAPI-Specification.md">OpenAPI Specification</a>
+            <a href="Seting-Up-Test-Env.md">Setting up a test environment</a>
+        </primary>
+
+        <secondary>
+            <title>Purchase Order</title>
+            <a href="Purchase-Order-API.topic">Getting Started</a>
+            <a href="Update.md">Create</a>
+        </secondary>
+
+
+    </section-starting-page>
+</topic>

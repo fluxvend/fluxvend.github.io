@@ -1,0 +1,1190 @@
+openapi: 3.0.1
+info:
+  title: FluxVend Inventory Management API
+  description: Documentation for Inventory Management Service API
+  contact:
+    name: FluxVend Support
+    email: support@fluxvend.com
+  license:
+    name: Apache 2.0
+    url: http://springdoc.org
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+security:
+  - JWT:
+      - global
+      - accessEverything
+tags:
+  - name: Purchase Order
+    description: API for managing purchase orders.
+  - name: Webhook
+    description: Webhook API
+  - name: Platform
+    description: APIs accessible to third-party platforms.
+  - name: API Credentials
+    description: REST API for managing API Credentials
+paths:
+  /webhooks/api/v1/{webhook}:
+    get:
+      tags:
+        - Webhook
+      summary: Get Webhook
+      description: Get a webhook
+      operationId: getWebhook
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WebhookDto'
+    put:
+      tags:
+        - Webhook
+      summary: Update Webhook
+      description: Update a webhook
+      operationId: updateWebhook
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        200:
+          description: OK
+  /webhooks/api/v1/{webhook}/enable:
+    post:
+      tags:
+        - Webhook
+      summary: Enable Webhook
+      description: Enable a webhook
+      operationId: enableWebhook
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+  /webhooks/api/v1/i/{tenant}/{webhook}:
+    post:
+      tags:
+        - Webhook
+      summary: Webhook
+      description: Webhook for receiving payment notifications. This endpoint is used by payment providers to send payment notifications to Fluxvend tenants.
+      operationId: notification
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        200:
+          description: OK
+  /platform/purchase-order/api/v1:
+    get:
+      tags:
+        - Platform
+        - Purchase Order
+      summary: Query Purchase Orders
+      description: >
+        Query and filter purchase orders based on specific criteria.
+
+
+        This endpoint allows you to search for purchase orders based on various criteria, such as supplier, date, status, or other attributes.
+
+
+        The response will contain a list of purchase orders that match the specified criteria.
+      operationId: queryPurchaseOrders
+      parameters:
+        - name: request
+          in: query
+          description: >
+            The criteria to filter and search purchase orders.
+
+
+            This can include supplier details, date range, status, or any other relevant attributes.
+
+
+            The response will contain a list of purchase orders that match the specified criteria.
+          required: true
+          schema:
+            type: string
+            description: >
+              The criteria to filter and search purchase orders.
+
+
+              This can include supplier details, date range, status, or any other relevant attributes.
+
+
+              The response will contain a list of purchase orders that match the specified criteria.
+      responses:
+        200:
+          description: Successfully retrieved purchase orders.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+              example: >
+                {
+                  totalCount: 1,
+                  "data": [
+                    {
+                      "externalRef": "EXT12345",
+                      "supplier": {
+                        "ref": "SUP12345",
+                        "name": "Acme Corporation",
+                        "email": "supplier@example.com",
+                        "phone": "07034567890",
+                        "address": "123 Main Street, Anytown, AN 12345, Country"
+                      },
+                      "vatRate": 5.00,
+                      "dateOrdered": "2024-08-12T00:00:00Z",
+                      "description": "Purchase order for office supplies."
+                    }
+                  ],
+                    "message": "Purchase orders retrieved successfully."
+                }
+        400:
+          description: Invalid input or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: You do not have the necessary permissions to query purchase orders.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An internal server error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Platform
+        - Purchase Order
+      summary: Create New Purchase Order
+      description: >
+        Create a new purchase order with the provided details.
+
+
+        This endpoint allows you to submit a new purchase order, including supplier information, items to be ordered, and any additional attributes.
+
+
+        Note: The purchase order will be saved as a draft and will not be sent to the supplier until it is manually approved by an authorized user.
+
+
+        The purchase order will be processed and saved in the system.
+      operationId: createPurchaseOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftPurchaseOrder'
+        required: true
+      responses:
+        200:
+          description: Successfully created purchase order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                data: PO000001
+                message: Purchase order created successfully.
+        400:
+          description: Invalid input or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: You do not have the necessary permissions to create a purchase order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An internal server error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /platform/purchase-order/api/v1/{ref}:
+    get:
+      tags:
+        - Platform
+        - Purchase Order
+      summary: Get Purchase Order Details
+      description: >
+        Retrieve the details of a specific purchase order.
+
+
+        This endpoint allows you to retrieve the details of a purchase order by providing its reference number.
+
+
+        The response will contain all the information related to the purchase order, including supplier details, items ordered, and status.
+      operationId: getPurchaseOrderDetails
+      parameters:
+        - name: ref
+          in: path
+          description: >
+            The reference number of the purchase order to retrieve details for.
+
+
+            This reference should match either the system's internal reference or an external reference provided during creation.
+
+
+            This is used to uniquely identify the purchase order to retrieve details for.
+          required: true
+          schema:
+            type: string
+            description: >
+              The reference number of the purchase order to retrieve details for.
+
+
+              This reference should match either the system's internal reference or an external reference provided during creation.
+
+
+              This is used to uniquely identify the purchase order to retrieve details for.
+            example: EXT12345
+          example: EXT12345
+      responses:
+        200:
+          description: Successfully retrieved purchase order details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftPurchaseOrder'
+        400:
+          description: Invalid input or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: You do not have the necessary permissions to view purchase order details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The requested purchase order was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An internal server error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Platform
+        - Purchase Order
+      summary: Update Purchase Order
+      description: >
+        Update an existing purchase order with the provided details.
+
+
+        This endpoint allows you to modify an existing purchase order, including supplier information, items to be ordered, and any additional attributes.
+
+
+        Note: The purchase order must already exist in the system and be in a draft state to be updated.
+
+
+        The purchase order will be processed and saved in the system.
+      operationId: updatePurchaseOrder
+      parameters:
+        - name: ref
+          in: path
+          description: >
+            The external reference number of the purchase order to be updated.
+
+
+            This reference should match either the system's internal reference or an external reference provided during creation.
+
+
+            This is used to uniquely identify the purchase order to be updated.
+          required: true
+          schema:
+            type: string
+            description: >
+              The external reference number of the purchase order to be updated.
+
+
+              This reference should match either the system's internal reference or an external reference provided during creation.
+
+
+              This is used to uniquely identify the purchase order to be updated.
+            example: EXT12345
+          example: EXT12345
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftPurchaseOrder'
+        required: true
+      responses:
+        200:
+          description: Successfully updated purchase order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrderResponse'
+              example:
+                data: PO000001
+                message: Purchase order updated successfully.
+        400:
+          description: Invalid input or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: You do not have the necessary permissions to update a purchase order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An internal server error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credentials/api/v1:
+    get:
+      tags:
+        - API Credentials
+      summary: Get Scoped Credentials
+      description: Fetch all scoped Credentials
+      operationId: getScopedCredentials
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - API Credentials
+      summary: Save Credentials
+      description: This API is used to save the credentials, either to create a new one or update an existing one
+      operationId: saveCredentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiCredentialRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credentials/api/v1/{key}/regenerate:
+    post:
+      tags:
+        - API Credentials
+      summary: Regenerate Credentials
+      description: Regenerate Credentials of the provided api key
+      operationId: regenerateCredential
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credentials/api/v1/{key}/deactivate:
+    post:
+      tags:
+        - API Credentials
+      summary: Deactivate Credentials
+      description: Deactivate the credentials for the provided api key
+      operationId: deactivateCredentials
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credentials/api/v1/{key}/activate:
+    post:
+      tags:
+        - API Credentials
+      summary: Activate Credentials
+      description: Activate the credentials for the provided api key
+      operationId: activateCredentials
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credentials/api/v1/logs:
+    post:
+      tags:
+        - API Credentials
+      summary: Get Api Credentials Logs
+      description: Get logs for requests made with the any api key
+      operationId: getApiCredentialLogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredentialLog'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /webhooks/api/v1:
+    get:
+      tags:
+        - Webhook
+      summary: Get Webhooks
+      description: Get all webhooks
+      operationId: getWebhooks
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhookDto'
+  /credentials/api/v1/{key}:
+    get:
+      tags:
+        - API Credentials
+      summary: Get Credentials
+      description: Get Credentials for the provided api key
+      operationId: getCredential
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - API Credentials
+      summary: Delete Credentials
+      description: Delete the credentials for the provided api key
+      operationId: deleteCredentials
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiCredential'
+        400:
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /webhooks/api/v1/{webhook}/disable:
+    delete:
+      tags:
+        - Webhook
+      summary: Disable Webhook
+      description: Disable a webhook
+      operationId: disableWebhook
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        data:
+          type: object
+          description: >+
+            The main data of the response. The type of this data can vary.
+
+            This can be a simple type such as `String`, `Integer`, `Long`, `Double`, `Boolean`, List, Set, Map, or a custom object.
+
+          oneOf:
+            - type: string
+            - type: integer
+              format: int32
+            - type: integer
+              format: int64
+            - type: number
+              format: double
+            - type: boolean
+            - type: object
+        message:
+          type: string
+          description: >
+            An optional message providing additional context or details about the response.
+
+
+            This message can be used to convey success, error details, or any other relevant information.
+          example: Operation completed successfully.
+      description: Standard response wrapper for API responses, containing the main data and an optional message.
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Date/time of error
+          format: date-time
+        message:
+          type: string
+          description: Message describing the error
+        status:
+          type: integer
+          description: Http status
+          format: int32
+        code:
+          type: integer
+          description: Code for identifying the cause of the server error
+          format: int32
+        serverError:
+          type: string
+          description: Enumeration of error codes used in the application.
+          enum:
+            - 99 INTERNAL
+            - 1004 NOT_FOUND
+            - 1002 BAD_REQUEST
+            - 1001 ALREADY_EXISTS
+            - 1003 NO_PERMISSION
+            - 4 INVALID_OPERATION
+            - 1003 UNAUTHORIZED
+            - 1004 USER_NOT_FOUND
+            - 1005 USER_ALREADY_EXISTS
+            - 1006 ROLE_NOT_FOUND
+            - 1007 ROLE_ALREADY_EXISTS
+            - 1008 PRIVILEGE_NOT_FOUND
+            - 1009 PRIVILEGE_ALREADY_EXISTS
+            - 1010 INVALID_GRANT_FORMAT
+            - 1011 INVALID_GRANT_CHARACTERS
+            - 1012 INVALID_GRANT_ACCESS
+            - 1013 CANNOT_DELETE_ROLES_IN_USE
+            - 1014 CANNOT_DELETE_PRIVILEGES_IN_USE
+            - 1015 CANNOT_DELETE_SYS_ROLE
+            - 1016 CANNOT_DELETE_SYS_PRIVILEGES
+            - 1017 CANNOT_DELETE_SELF
+            - 1018 ACCOUNT_DISABLED
+            - 1019 ACCOUNT_REGISTRATION_FAILED
+            - 1020 VALID_ACCOUNT_REQUIRED
+            - 1021 ACCOUNT_VERIFIED
+            - 1022 ACCOUNT_NOT_VERIFIED
+            - 1023 TENANT_NOT_FOUND
+            - 1024 TENANT_ALREADY_EXISTS
+            - 1025 TENANT_ID_EXISTS
+            - 1026 TENANT_NOT_ACTIVE
+            - 1027 TENANT_NOT_VERIFIED
+            - 1028 TENANT_NOT_APPROVED
+            - 1029 TENANT_NOT_REGISTERED
+            - 1030 TENANT_NAME_REQUIRED
+            - 1031 TENANT_EMAIL_REQUIRED
+            - 1032 TENANT_PHONE_REQUIRED
+            - 1033 TENANT_PRIMARY_ADMIN_USERNAME_REQUIRED
+            - 1034 TENANT_PRIMARY_ADMIN_PASSWORD_REQUIRED
+            - 1035 TENANT_KYC_ALREADY_VERIFIED
+            - 1036 TENANT_KYC_SCORE_TOO_LOW
+            - 1037 MISSING_REQUIRED_FIELDS
+            - 1038 SUBSCRIPTION_ALREADY_ACTIVE
+            - 1039 SUBSCRIPTION_NOT_INITIATED
+            - 1040 PAYMENT_VERIFICATION_FAILED
+            - 1041 NOT_AUTHORISED
+            - 1042 NO_ACTIVE_SUBSCRIPTION
+            - 1043 PENDING_PAYMENT
+            - 1044 NO_PAYMENT_CARD
+            - 1045 TOKEN_NOT_VALID
+            - 1046 TOKEN_EXPIRED
+            - 1047 SUBSCRIPTION_LIMIT_EXCEEDED
+            - 2001 SUPPLIER_NOT_FOUND
+            - 2002 STOCK_NOT_FOUND
+            - 2003 PRODUCT_NOT_FOUND
+            - 2004 STOCK_ALREADY_EXISTS
+            - 2005 SUPPLIER_ALREADY_EXISTS
+            - 2006 PRODUCT_ALREADY_EXISTS
+            - 2007 STOCK_QUANTITY_NOT_ENOUGH
+            - 2008 STOCK_QUANTITY_NOT_VALID
+            - 2009 STOCK_PRICE_NOT_VALID
+            - 2010 TERMINAL_DELETED
+        path:
+          type: string
+          description: Error path
+      description: Returned whenever an error occurs
+    DraftPurchaseOrder:
+      required:
+        - items
+        - supplier
+      type: object
+      properties:
+        externalRef:
+          type: string
+          description: >
+            A reference string that links this purchase order to an external system.
+
+
+            This field is useful for tracking the order in both your system and an external system.
+          example: EXT12345
+        supplier:
+          $ref: '#/components/schemas/DraftPurchaseOrderSupplier'
+        vatRate:
+          type: number
+          description: >
+            The VAT rate applicable to the purchase order.
+
+
+            This should be a decimal value representing the percentage rate (e.g., 5.00 for 5%).
+          example: 5.0
+        dateOrdered:
+          type: string
+          description: >
+            The date when the purchase order was placed.
+
+
+            This field is important for tracking the timeline of the order and its subsequent processes.
+
+
+            If not provided, the current date and time will be used as the order date.
+          format: date-time
+          example: 2024-08-12T00:00:00Z
+        description:
+          type: string
+          description: >
+            A brief description or summary of the purchase order.
+
+
+            This can include details such as the purpose of the order or any special instructions.
+          example: Purchase order for office supplies.
+        items:
+          type: array
+          description: >
+            A list of items included in the purchase order.
+
+
+            Each item should include details such as product reference, quantity, unit price etc.
+          items:
+            $ref: '#/components/schemas/DraftPurchaseOrderItem'
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: >
+              A map of additional attributes or metadata associated with the purchase order.
+
+
+              This can include any custom fields or notes that are relevant to the order.
+            example: "{'notes':'Urgent delivery', 'url':'http://example.com/details'}"
+          description: >
+            A map of additional attributes or metadata associated with the purchase order.
+
+
+            This can include any custom fields or notes that are relevant to the order.
+          example: "{'notes':'Urgent delivery', 'url':'http://example.com/details'}"
+      description: >
+        Represents the data required to create a new purchase order in the system.
+
+
+        This includes details about the supplier, the items to be ordered, and any additional metadata or notes associated with the order.
+    DraftPurchaseOrderItem:
+      required:
+        - quantity
+        - ref
+        - unitPrice
+      type: object
+      properties:
+        ref:
+          type: string
+          description: >
+            Unique product identifier used within the purchase order system.
+
+
+            This can be a product reference, SKU, barcode, or serial number.
+
+
+            It must correspond to a valid product in the inventory.
+        quantity:
+          type: integer
+          description: >
+            Quantity of the product to be purchased.
+
+
+            This must be a positive integer.
+          format: int32
+        uom:
+          type: string
+          description: >
+            Unit of measurement for the product quantity.
+
+
+            This can be a standard unit of measurement like 'kg', 'litre', or 'unit', or a specific UOM reference.
+
+
+            If not provided, the default UOM for the product will be applied.
+        unitPrice:
+          type: number
+          description: >
+            Price per unit of the product.
+
+
+            This should be a decimal value representing the cost per unit in the system's currency.
+      description: Details of a product in a draft purchase order.
+    DraftPurchaseOrderSupplier:
+      type: object
+      properties:
+        ref:
+          type: string
+          description: >
+            The supplier's reference number as it appears in the admin's supplier list.
+
+            This reference is used to uniquely identify the supplier within the system.
+
+            If the supplier is not in the list or the reference is unknown, this field can be left blank,
+
+            but other identifying information (e.g., name, email, or phone) must be provided.
+          example: SUP12345
+        name:
+          type: string
+          description: >
+            The full name of the supplier.
+
+            This name should match the official or registered name of the supplier as used in correspondence or contracts.
+          example: Acme Corporation
+        email:
+          type: string
+          description: >
+            The email address of the supplier.
+
+            This is used for electronic communication, including sending purchase orders, queries, or other relevant information.
+          example: supplier@example.com
+        phone:
+          type: string
+          description: >
+            The phone number of the supplier.
+
+            This contact number is used for quick communication or follow-ups regarding the purchase order.
+          example: 07034567890
+        address:
+          type: string
+          description: >
+            The physical address of the supplier.
+
+            This is used for shipping, billing, and other official communications.
+          example: 123 Main Street, Anytown, AN 12345, Country
+      description: >
+        Contains the details of the supplier associated with a draft purchase order.
+
+        This includes references, contact information, and address details, which are essential for processing and managing supplier relations within the system.
+      example: "{'ref':'SUP12345', 'name':'Acme Corporation', 'email':'supplier@example.com', 'phone':'07034567890', 'address':'123 Main Street, Anytown, AN 12345, Country'}"
+    PurchaseOrderResponse:
+      type: object
+      properties:
+        ref:
+          type: string
+        message:
+          type: string
+    ApiCredential:
+      type: object
+      properties:
+        name:
+          type: string
+        apiKey:
+          type: string
+        apiSecret:
+          type: string
+        whiteListedIps:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+        defaultCredential:
+          type: boolean
+        lastUsed:
+          type: string
+    Permission:
+      type: object
+      properties:
+        ref:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        system:
+          type: boolean
+    ApiCredentialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        apiKey:
+          type: string
+        whiteListedIps:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+    ApiCredentialLog:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        apiKey:
+          type: string
+        ip:
+          type: string
+        userAgent:
+          type: string
+        method:
+          type: string
+        path:
+          type: string
+        status:
+          type: string
+    QueryRequest:
+      required:
+        - pageNumber
+        - pageSize
+      type: object
+      properties:
+        search:
+          type: string
+          description: >
+            An optional search term to filter records by name or other searchable fields.
+
+            If provided, the query will include this term in the search criteria.
+          example: product1
+        filter:
+          type: object
+          additionalProperties:
+            type: string
+            description: >
+              A map of key-value pairs used for filtering records based on multiple criteria.
+
+              The keys represent the field names, and the values represent the filter values.
+
+              For example, a filter for products might look like `{"product": "product1"}`.
+            example: '{"product":"product1"}'
+          description: >
+            A map of key-value pairs used for filtering records based on multiple criteria.
+
+            The keys represent the field names, and the values represent the filter values.
+
+            For example, a filter for products might look like `{"product": "product1"}`.
+          example:
+            product: product1
+        sortOrder:
+          type: string
+          description: >
+            Specifies the sort order for the results.
+
+
+            Allowed values are `ASC` (ascending) and `DESC` (descending).
+          example: ASC
+          enum:
+            - ASC
+            - DESC
+        sortField:
+          type: string
+          description: >
+            The field to be used for sorting the results.
+
+
+            Must correspond to a valid field in the object being queried.
+          example: price
+        pageNumber:
+          type: integer
+          description: >
+            The page number for pagination.
+
+            This field is required to specify which page of results to retrieve.
+
+            Default is 1 if not provided.
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: >
+            The number of items per page for pagination.
+
+            This field is required to define the page size.
+
+            Default is 10 if not provided.
+          format: int32
+          example: 10
+        params:
+          type: object
+          additionalProperties:
+            type: object
+            description: >
+              Additional parameters for the query, which can be used for custom filtering or other purposes.
+
+              This field allows for flexible extensions and can include complex nested structures.
+            example:
+              user:
+                id: 1
+          description: >
+            Additional parameters for the query, which can be used for custom filtering or other purposes.
+
+            This field allows for flexible extensions and can include complex nested structures.
+          example:
+            user:
+              id: 1
+      description: >
+        Represents a request for querying data with various optional parameters for dynamic retrieval.
+
+
+        This class supports filtering, sorting, pagination, and additional custom parameters.
+    WebhookDto:
+      type: object
+      properties:
+        ref:
+          type: string
+        tenantId:
+          type: string
+        whiteListedIps:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+    QueryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: >+
+            The main data of the response. The type of this data can vary.
+
+            This can be a simple type such as `String`, `Integer`, `Long`, `Double`, `Boolean`, List, Set, Map, or a custom object.
+
+          items:
+            type: object
+            description: >+
+              The main data of the response. The type of this data can vary.
+
+              This can be a simple type such as `String`, `Integer`, `Long`, `Double`, `Boolean`, List, Set, Map, or a custom object.
+
+            oneOf:
+              - type: string
+              - type: integer
+                format: int32
+              - type: integer
+                format: int64
+              - type: number
+                format: double
+              - type: boolean
+              - type: object
+        message:
+          type: string
+          description: >
+            An optional message providing additional context or details about the response.
+
+
+            This message can be used to convey success, error details, or any other relevant information.
+          example: Operation completed successfully.
+        totalCount:
+          type: integer
+          description: >
+            The total number of records that match the query criteria.
+
+            This field helps in understanding the full size of the dataset,
+
+            even when the data returned is paginated or filtered.
+          format: int64
+          example: 150
+      description: >
+        A response wrapper for paginated, filtered, or search queries.
+
+        This class extends the standard `Response` class to include a `totalCount` field,
+
+        representing the total number of records that match the query criteria.
+  securitySchemes:
+    JWT:
+      type: apiKey
+      name: Authorization
+      in: header

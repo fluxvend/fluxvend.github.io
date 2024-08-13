@@ -39,7 +39,7 @@ jobs:
           path: |
             artifacts/${{ env.ARTIFACT }}
             artifacts/report.json
-          retention-days: 7
+          retention-days: 1
   test:
     needs: build
     runs-on: ubuntu-latest

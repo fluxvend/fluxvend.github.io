@@ -14,4 +14,20 @@
         <description>Created after removal of "Web Application Guide" from Fluxvend</description>
         <accepts>Web-Application-Guide.html</accepts>
     </rule>
+    <rule id="39bad506">
+        <description>Created after removal of "Developer Tools" from Fluxvend</description>
+        <accepts>Developer-Tools.html</accepts>
+    </rule>
+    <rule id="7504d5a7">
+        <description>Created after removal of "Api Docs" from Fluxvend</description>
+        <accepts>Api-Docs.html</accepts>
+    </rule>
+    <rule id="3143f310">
+        <description>Created after removal of "API Glossary" from Fluxvend</description>
+        <accepts>API-Glossary.html</accepts>
+    </rule>
+    <rule id="5d3aa9f1">
+        <description><![CDATA[Created after removal of "<Welcome.md>" from Fluxvend]]></description>
+        <accepts>Welcome.html</accepts>
+    </rule>
 </rules>
