@@ -11,12 +11,12 @@
         <toc-element topic="Getting-Started.md">
             <toc-element topic="System-Requirements.md"/>
             <toc-element topic="Installation-Guides.md">
-                <toc-element topic="Web-Admin-Setup.md"/>
-                <toc-element topic="Subscription-Process.md">
+                <toc-element topic="Web-Admin-Setup.md">
+                    <toc-element topic="Subscription-Process.md"/>
+                    <toc-element topic="Granting-Permissions-to-Your-User-Account.md"/>
+                    <toc-element topic="Setting-Up-Your-First-Location.md"/>
+                    <toc-element topic="Creating-Your-First-Category-and-Products.md"/>
                 </toc-element>
-                <toc-element topic="Granting-Permissions-to-Your-User-Account.md"/>
-                <toc-element topic="Setting-Up-Your-First-Location.md"/>
-                <toc-element topic="Creating-Your-First-Category-and-Products.md"/>
             </toc-element>
         </toc-element>
         <toc-element topic="User-Guides.md">
